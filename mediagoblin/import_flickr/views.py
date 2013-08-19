@@ -60,14 +60,22 @@ def submit_start(request):
                     filename = unicode(uuid.uuid4()) + splitext(filename)[-1]
 
 		#-----Test log-----
-		print request.files['file']
+		print type(request.files['file'])
+		print request.files['file'].stream
 		print "-----Test log-----File name: " + filename
 
 		print "-------------------File Data------------------------"
-		for filename in [ request.files['file'] ]:
-    			print '%20s  %s' % (filename, zipfile.is_zipfile(filename))
+		for name in [ request.files['file'] ]:
+    			print '%20s  %s' % (name, zipfile.is_zipfile(name))
 		zf = zipfile.ZipFile(request.files['file'], 'r')
-		print zf.namelist()
+		for name in zf.namelist():
+			print name.lstrip('dst')
+			try:
+				data = zf.read(name)
+				#if name.lstrip('dst')=='/9400468894.png':
+					#media_type, media_manager = sniff_media(request.files['file'].rstrip('.zip')+name.lstrip('dst'))
+			except KeyError:
+			        print 'ERROR: Did not find %s in zip file' % name
 		print "----------------------------------------------------"
 		
                 # Sniff the submitted media to determine which
