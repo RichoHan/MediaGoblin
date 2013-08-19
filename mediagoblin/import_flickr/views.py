@@ -66,60 +66,60 @@ def submit_start(request):
 		print request.files['file'].stream
 		print "-----Test log-----File name: " + filename
 
-		print "-------------------File Data------------------------"
-		type_list = ['rgb', 'gif', 'pbm', 'pgm', 'ppm', 'tiff', 'rast', 'xbm', 'jpeg', 'jpg', 'bmp', 'png']
-		for name in [ request.files['file'] ]:
-    			print '%20s  %s' % (name, zipfile.is_zipfile(name))
-		zf = zipfile.ZipFile(request.files['file'], 'r')
-		for name in zf.namelist():
-			try:
-				data = zf.read(name)
-				if imghdr.what(name, data):
-					upload_data = data
-					upload_filename = name.lstrip('dst/')
-			except KeyError:
-			        print 'ERROR: Did not find %s in zip file' % name
-		print "----------------------------------------------------"
-		
                 # Sniff the submitted media to determine which
                 # media plugin should handle processing
                 media_type, media_manager = sniff_media(
                     request.files['file'])
 
-                # create entry and save in database
-                entry = new_upload_entry(request.user)
-                entry.media_type = unicode(media_type)
-                entry.title = unicode('Test Title')#(
-                    #unicode(submit_form.title.data)
-                    #or unicode(splitext(request.files['file'].filename)[0]))
+		print "-------------------File Data------------------------"
+                for name in [ request.files['file'] ]:
+                        print '%20s  %s' % (name, zipfile.is_zipfile(name))
+                zf = zipfile.ZipFile(request.files['file'], 'r')
+                for name in zf.namelist():
+                        try:
+                                data = zf.read(name)
+                                if imghdr.what(name, data):
+					upload_data = data
+                                        upload_filename = name.lstrip('dst/')
 
-                entry.description = unicode('Test Description')#unicode(submit_form.description.data)
+					# create entry and save in database
+			                entry = new_upload_entry(request.user)
+			                entry.media_type = unicode(media_type)
+			                entry.title = unicode('Test Title')#(
+			                    #unicode(submit_form.title.data)
+			                    #or unicode(splitext(request.files['file'].filename)[0]))
 
-                entry.license = unicode('http://creativecommons.org/publicdomain/mark/1.0/')#unicode(submit_form.license.data) or None
+			                entry.description = unicode('Test Description')#unicode(submit_form.description.data)
 
-                # Process the user's folksonomy "tags"
-                entry.tags = convert_to_tag_list_of_dicts(
-                    submit_form.tags.data)
-               
-		# Generate a slug from the title
-                entry.generate_slug()
+			                entry.license = unicode('http://creativecommons.org/publicdomain/mark/1.0/')#unicode(submit_form.license.data) or None
 
-                queue_file = prepare_queue_task(request.app, entry, upload_filename)#filename)
+			                # Process the user's folksonomy "tags"
+			                entry.tags = convert_to_tag_list_of_dicts(
+			                    submit_form.tags.data)
 
-                with queue_file:
-                    queue_file.write(upload_data)#request.files['file'].stream.read())
+			                # Generate a slug from the title
+			                entry.generate_slug()
 
-                # Save now so we have this data before kicking off processing
-                entry.save()
+					queue_file = prepare_queue_task(request.app, entry, upload_filename)#filename)
+
+			                with queue_file:
+			                    queue_file.write(upload_data)#request.files['file'].stream.read())
+
+					# Save now so we have this data before kicking off processing
+			                entry.save()
+
+					feed_url = request.urlgen(
+			                    'mediagoblin.user_pages.atom_feed',
+			                    qualified=True, user=request.user.username)
+			                run_process_media(entry, feed_url)
+                        except KeyError:
+                                print 'ERROR: Did not find %s in zip file' % name
+                print "----------------------------------------------------"
 
                 # Pass off to processing
                 #
                 # (... don't change entry after this point to avoid race
                 # conditions with changes to the document via processing code)
-                feed_url = request.urlgen(
-                    'mediagoblin.user_pages.atom_feed',
-                    qualified=True, user=request.user.username)
-                run_process_media(entry, feed_url)
                 add_message(request, SUCCESS, _('Woohoo! Submitted!'))
 
                 add_comment_subscription(request.user, entry)
