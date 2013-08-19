@@ -60,8 +60,16 @@ def submit_start(request):
                     filename = unicode(uuid.uuid4()) + splitext(filename)[-1]
 
 		#-----Test log-----
+		print request.files['file']
 		print "-----Test log-----File name: " + filename
 
+		print "-------------------File Data------------------------"
+		for filename in [ request.files['file'] ]:
+    			print '%20s  %s' % (filename, zipfile.is_zipfile(filename))
+		zf = zipfile.ZipFile(request.files['file'], 'r')
+		print zf.namelist()
+		print "----------------------------------------------------"
+		
                 # Sniff the submitted media to determine which
                 # media plugin should handle processing
                 media_type, media_manager = sniff_media(
@@ -69,7 +77,7 @@ def submit_start(request):
 
 		#-----Test log-----
                 print "-----Test log-----media_type: " + media_type
-		#print "-----Test log-----media_manager: " + media_manager
+		print media_manager
 
                 # create entry and save in database
                 entry = new_upload_entry(request.user)
