@@ -60,6 +60,7 @@ def submit_start(request):
                     filename = unicode(uuid.uuid4()) + splitext(filename)[-1]
 
 		#-----Test log-----
+		print type(request)
 		print type(request.files['file'])
 		print request.files['file'].stream
 		print "-----Test log-----File name: " + filename
@@ -72,8 +73,9 @@ def submit_start(request):
 			print name.lstrip('dst')
 			try:
 				data = zf.read(name)
-				#if name.lstrip('dst')=='/9400468894.png':
-					#media_type, media_manager = sniff_media(request.files['file'].rstrip('.zip')+name.lstrip('dst'))
+				if name.lstrip('dst')=='/9400468894.png':
+					upload_data = data
+					upload_filename = name.lstrip('dst/')
 			except KeyError:
 			        print 'ERROR: Did not find %s in zip file' % name
 		print "----------------------------------------------------"
@@ -105,10 +107,10 @@ def submit_start(request):
 		# Generate a slug from the title
                 entry.generate_slug()
 
-                queue_file = prepare_queue_task(request.app, entry, filename)
+                queue_file = prepare_queue_task(request.app, entry, upload_filename)#filename)
 
                 with queue_file:
-                    queue_file.write(request.files['file'].stream.read())
+                    queue_file.write(upload_data)#request.files['file'].stream.read())
 
                 # Save now so we have this data before kicking off processing
                 entry.save()

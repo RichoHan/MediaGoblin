@@ -57,6 +57,8 @@ def sniff_media(media):
     '''
 
     try:
+	if media.filename.endswith('.zip'):
+		return get_media_type_and_manager(media.filename.replace('.zip', '.png'))
         return get_media_type_and_manager(media.filename)
     except FileTypeNotSupported:
         _log.info('No media handler found by file extension. Doing it the expensive way...')
