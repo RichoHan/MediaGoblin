@@ -21,6 +21,7 @@ from os.path import splitext
 import logging
 import uuid
 import zipfile
+import imghdr
 
 _log = logging.getLogger(__name__)
 
@@ -66,14 +67,14 @@ def submit_start(request):
 		print "-----Test log-----File name: " + filename
 
 		print "-------------------File Data------------------------"
+		type_list = ['rgb', 'gif', 'pbm', 'pgm', 'ppm', 'tiff', 'rast', 'xbm', 'jpeg', 'jpg', 'bmp', 'png']
 		for name in [ request.files['file'] ]:
     			print '%20s  %s' % (name, zipfile.is_zipfile(name))
 		zf = zipfile.ZipFile(request.files['file'], 'r')
 		for name in zf.namelist():
-			print name.lstrip('dst')
 			try:
 				data = zf.read(name)
-				if name.lstrip('dst')=='/9400468894.png':
+				if imghdr.what(name, data):
 					upload_data = data
 					upload_filename = name.lstrip('dst/')
 			except KeyError:
@@ -84,10 +85,6 @@ def submit_start(request):
                 # media plugin should handle processing
                 media_type, media_manager = sniff_media(
                     request.files['file'])
-
-		#-----Test log-----
-                print "-----Test log-----media_type: " + media_type
-		print media_manager
 
                 # create entry and save in database
                 entry = new_upload_entry(request.user)
@@ -124,9 +121,6 @@ def submit_start(request):
                     qualified=True, user=request.user.username)
                 run_process_media(entry, feed_url)
                 add_message(request, SUCCESS, _('Woohoo! Submitted!'))
-
-		#-----Test log-----
-		print "-----Test log-----submit_form.license.data: " + submit_form.license.data + ', entry.license:' + entry.license
 
                 add_comment_subscription(request.user, entry)
 
