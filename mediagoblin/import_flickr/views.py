@@ -20,6 +20,7 @@ from os.path import splitext
 
 import logging
 import uuid
+import zipfile
 
 _log = logging.getLogger(__name__)
 
@@ -66,6 +67,10 @@ def submit_start(request):
                 media_type, media_manager = sniff_media(
                     request.files['file'])
 
+		#-----Test log-----
+                print "-----Test log-----media_type: " + media_type
+		#print "-----Test log-----media_manager: " + media_manager
+
                 # create entry and save in database
                 entry = new_upload_entry(request.user)
                 entry.media_type = unicode(media_type)
@@ -103,7 +108,7 @@ def submit_start(request):
                 add_message(request, SUCCESS, _('Woohoo! Submitted!'))
 
 		#-----Test log-----
-		print "-----Test log-----" + submit_form.license.data + '\n' + entry.license
+		print "-----Test log-----submit_form.license.data: " + submit_form.license.data + ', entry.license:' + entry.license
 
                 add_comment_subscription(request.user, entry)
 

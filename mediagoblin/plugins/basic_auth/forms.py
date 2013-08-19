@@ -20,6 +20,7 @@ from mediagoblin.auth.tools import normalize_user_or_email_field
 
 
 class RegistrationForm(wtforms.Form):
+    print "Basic_auth/forms.py:RegistrationForm(wtforms.Form)\n"
     username = wtforms.TextField(
         _('Username'),
         [wtforms.validators.Required(),
@@ -35,6 +36,7 @@ class RegistrationForm(wtforms.Form):
 
 
 class LoginForm(wtforms.Form):
+    print "Basic_auth/forms.py:LoginForm(wtforms.Form)\n"
     username = wtforms.TextField(
         _('Username or Email'),
         [wtforms.validators.Required(),

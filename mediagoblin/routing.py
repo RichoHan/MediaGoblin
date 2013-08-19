@@ -31,6 +31,7 @@ def get_url_map():
     mount('/a', admin_routes)
 
     import mediagoblin.submit.routing
+    import mediagoblin.import_flickr.routing
     import mediagoblin.user_pages.routing
     import mediagoblin.edit.routing
     import mediagoblin.webfinger.routing

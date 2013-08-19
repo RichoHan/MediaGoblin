@@ -67,6 +67,7 @@ class MediaGoblinApp(object):
         # Setup config
         ##############
 
+	########################Important for login#######################	
         # Open and setup the config
         global_config, app_config = setup_global_and_app_config(config_path)
 
@@ -80,10 +81,9 @@ class MediaGoblinApp(object):
 
         # Setup Session Manager, not needed in celery
         self.session_manager = session.SessionManager()
-
-        # load all available locales
+        
+	# load all available locales
         setup_locales()
-
         # Set up plugins -- need to do this early so that plugins can
         # affect startup.
         _log.info("Setting up plugins.")
@@ -106,7 +106,6 @@ class MediaGoblinApp(object):
         self.auth = check_auth_enabled()
         if not self.auth:
             app_config['allow_comments'] = False
-
         # Set up storage systems
         self.public_store, self.queue_store = setup_storage()
 
