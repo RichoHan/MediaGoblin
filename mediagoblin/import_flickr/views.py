@@ -22,7 +22,7 @@ import logging
 import uuid
 import zipfile
 import imghdr
-
+from xml.etree import ElementTree
 _log = logging.getLogger(__name__)
 
 
@@ -72,24 +72,32 @@ def submit_start(request):
                     request.files['file'])
 
 		print "-------------------File Data------------------------"
-                for name in [ request.files['file'] ]:
-                        print '%20s  %s' % (name, zipfile.is_zipfile(name))
                 zf = zipfile.ZipFile(request.files['file'], 'r')
                 for name in zf.namelist():
                         try:
                                 data = zf.read(name)
                                 if imghdr.what(name, data):
+					#print name.split(".")[0]
+					metadata = ElementTree.ElementTree(ElementTree.fromstring(zf.read(name.split(".")[0]+'.xml')))
+					print metadata
+
+					img_title = metadata.find('title').text
+					img_description = metadata.find('description').text
+					print img_title
+					print img_description
+
 					upload_data = data
                                         upload_filename = name.lstrip('dst/')
 
 					# create entry and save in database
 			                entry = new_upload_entry(request.user)
 			                entry.media_type = unicode(media_type)
-			                entry.title = unicode('Test Title')#(
+			                
+					entry.title = unicode(img_title)#(
 			                    #unicode(submit_form.title.data)
 			                    #or unicode(splitext(request.files['file'].filename)[0]))
 
-			                entry.description = unicode('Test Description')#unicode(submit_form.description.data)
+			                entry.description = unicode(img_description)#unicode(submit_form.description.data)
 
 			                entry.license = unicode('http://creativecommons.org/publicdomain/mark/1.0/')#unicode(submit_form.license.data) or None
 
