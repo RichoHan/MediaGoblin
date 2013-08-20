@@ -23,13 +23,13 @@ from mediagoblin.tools.licenses import licenses_as_choices
 
 
 class SubmitStartForm(wtforms.Form):
-    file = wtforms.FileField(_('File'))
-    title = wtforms.TextField(
-        _('Title'),
-        [wtforms.validators.Length(min=0, max=500)])
-    description = wtforms.TextAreaField(
-        _('Description of this work'),
-        description=_("""You can use
+    file = wtforms.FileField(_('File'),description=_("""Only zip file accepted."""))
+    #title = wtforms.TextField(
+    #    _('Title'),
+    #    [wtforms.validators.Length(min=0, max=500)])
+    #description = wtforms.TextAreaField(
+    #    _('Description of this work'),
+    #    description=_("""You can use
                       #<a href="http://daringfireball.net/projects/markdown/basics">
                       #Markdown</a> for formatting."""))
     tags = wtforms.TextField(
@@ -37,17 +37,17 @@ class SubmitStartForm(wtforms.Form):
         [tag_length_validator],
         description=_(
           "Separate tags by commas."))
-    license = wtforms.SelectField(
-        _('License'),
-        [wtforms.validators.Optional(),],
-        choices=licenses_as_choices())
+    #license = wtforms.SelectField(
+    #    _('License'),
+    #    [wtforms.validators.Optional(),],
+    #    choices=licenses_as_choices())
 
-class AddCollectionForm(wtforms.Form):
-    title = wtforms.TextField(
-        _('Title'),
-        [wtforms.validators.Length(min=0, max=500), wtforms.validators.Required()])
-    description = wtforms.TextAreaField(
-        _('Description of this collection'),
-        description=_("""You can use
-                      <a href="http://daringfireball.net/projects/markdown/basics">
-                      Markdown</a> for formatting."""))
+#class AddCollectionForm(wtforms.Form):
+#    title = wtforms.TextField(
+#        _('Title'),
+#        [wtforms.validators.Length(min=0, max=500), wtforms.validators.Required()])
+#    description = wtforms.TextAreaField(
+#        _('Description of this collection'),
+#        description=_("""You can use
+#                      <a href="http://daringfireball.net/projects/markdown/basics">
+#                      Markdown</a> for formatting."""))
