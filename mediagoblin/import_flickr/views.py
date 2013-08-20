@@ -60,34 +60,29 @@ def submit_start(request):
                 if not all(ord(c) < 128 for c in filename):
                     filename = unicode(uuid.uuid4()) + splitext(filename)[-1]
 
-		#-----Test log-----
-		print type(request)
-		print type(request.files['file'])
-		print request.files['file'].stream
-		print "-----Test log-----File name: " + filename
 
                 # Sniff the submitted media to determine which
                 # media plugin should handle processing
+		# I've modified ../media_types/__init__.py so that a zip file can pass the checking system
+		# It will be seen as an image file
                 media_type, media_manager = sniff_media(
                     request.files['file'])
 
-		print "-------------------File Data------------------------"
+		# Read the zip file and processing each photo with its metadata
                 zf = zipfile.ZipFile(request.files['file'], 'r')
                 for name in zf.namelist():
                         try:
                                 data = zf.read(name)
                                 if imghdr.what(name, data):
-					#print name.split(".")[0]
 					metadata = ElementTree.ElementTree(ElementTree.fromstring(zf.read(name.split(".")[0]+'.xml')))
 
+					# Fetch the data in metadata that matches the format in mediagoblin
+					# Not yet finish the whole checking problem, some data may not exist
 					img_title = metadata.find('title').text
 					img_description = metadata.find('description').text
 					img_tags = ''
 					for tag in metadata.find('tags'):
 						img_tags = img_tags + ', ' + tag.text
-					print img_title
-					print img_description
-					print img_tags
 
 					upload_data = data
                                         upload_filename = name.lstrip('dst/')
@@ -125,7 +120,6 @@ def submit_start(request):
 			                run_process_media(entry, feed_url)
                         except KeyError:
                                 print 'ERROR: Did not find %s in zip file' % name
-                print "----------------------------------------------------"
 
                 # Pass off to processing
                 #
