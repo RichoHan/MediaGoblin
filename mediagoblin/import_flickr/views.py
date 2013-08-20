@@ -153,11 +153,8 @@ def submit_start(request):
          'app_config': mg_globals.app_config})
 
 
-@require_active_login
+"""@require_active_login
 def add_collection(request, media=None):
-    """
-    View to create a new collection
-    """
     submit_form = submit_forms.AddCollectionForm(request.form)
 
     if request.method == 'POST' and submit_form.validate():
@@ -190,4 +187,4 @@ def add_collection(request, media=None):
         request,
         'mediagoblin/submit/collection.html',
         {'submit_form': submit_form,
-         'app_config': mg_globals.app_config})
+         'app_config': mg_globals.app_config})"""
