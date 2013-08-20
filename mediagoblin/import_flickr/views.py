@@ -79,12 +79,15 @@ def submit_start(request):
                                 if imghdr.what(name, data):
 					#print name.split(".")[0]
 					metadata = ElementTree.ElementTree(ElementTree.fromstring(zf.read(name.split(".")[0]+'.xml')))
-					print metadata
 
 					img_title = metadata.find('title').text
 					img_description = metadata.find('description').text
+					img_tags = ''
+					for tag in metadata.find('tags'):
+						img_tags = img_tags + ', ' + tag.text
 					print img_title
 					print img_description
+					print img_tags
 
 					upload_data = data
                                         upload_filename = name.lstrip('dst/')
@@ -102,8 +105,8 @@ def submit_start(request):
 			                entry.license = unicode('http://creativecommons.org/publicdomain/mark/1.0/')#unicode(submit_form.license.data) or None
 
 			                # Process the user's folksonomy "tags"
-			                entry.tags = convert_to_tag_list_of_dicts(
-			                    submit_form.tags.data)
+			                entry.tags = convert_to_tag_list_of_dicts(img_tags)
+			                #    submit_form.tags.data)
 
 			                # Generate a slug from the title
 			                entry.generate_slug()
